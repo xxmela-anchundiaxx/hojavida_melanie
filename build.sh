@@ -17,8 +17,8 @@ python manage.py migrate
 python manage.py shell << END
 from django.contrib.auth import get_user_model
 User = get_user_model()
-username = 'annyespinales'
-password = '12345'
+username = 'admin'
+password = 'Melanie2005.'
 
 if not User.objects.filter(username=username).exists():
     User.objects.create_superuser(username=username, email='', password=password)

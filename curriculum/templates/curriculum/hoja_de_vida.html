@@ -1,0 +1,1118 @@
+<!-- templates/curriculum/hoja_de_vida.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% if perfil %}
+            Hoja de Vida - {{ perfil.nombres }} {{ perfil.apellidos }}
+        {% else %}
+            Sistema de Hoja de Vida
+        {% endif %}
+    </title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #ff4da6;
+            --secondary-color: #ff99cc;
+            --accent-color: #ff66b3;
+            --light-bg: #fff5fb;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.5;
+            padding: 10px;
+        }
+        
+        /* CONTENEDOR PRINCIPAL - Dos columnas */
+        .cv-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 20px;
+            min-height: 100vh;
+        }
+        
+        /* PANEL IZQUIERDO - Información personal */
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 25px;
+            height: fit-content;
+        }
+        
+        .profile-img {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 4px solid white;
+            object-fit: cover;
+            margin: 0 auto 20px;
+            display: block;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .profile-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .profile-title {
+            font-size: 1rem;
+            opacity: 0.9;
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .section-title-sidebar {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 25px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+        
+        .contact-item i {
+            width: 16px;
+            margin-top: 2px;
+            color: var(--secondary-color);
+        }
+        
+        .skills-list {
+            list-style: none;
+        }
+        
+        .skill-item {
+            margin-bottom: 10px;
+        }
+        
+        .skill-name {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .skill-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .skill-level {
+            height: 100%;
+            background: var(--secondary-color);
+            border-radius: 3px;
+        }
+
+        /* Tarjetas pequeñas estilo "Resumen rápido" */
+        .small-card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .small-card {
+            background: rgba(255,255,255,0.98);
+            color: var(--primary-color);
+            padding: 28px 14px 16px 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            box-shadow: 0 6px 18px rgba(255,77,166,0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            gap: 8px;
+            font-size: 0.95rem;
+            min-height: 110px;
+            position: relative;
+        }
+
+        .small-card .count {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            font-weight: 900;
+        }
+
+        .small-card .card-icon {
+            font-size: 1.6rem;
+        }
+
+        .small-card .small-label {
+            font-weight: 600;
+            color: #27435a;
+            font-size: 0.95rem;
+            margin-top: 8px;
+        }
+
+        /* Link para certificados */
+        .cert-link {
+            color: var(--accent-color);
+            font-weight: 700;
+            text-decoration: underline;
+            font-size: 0.95rem;
+        }
+        .cert-link:hover { opacity: 0.9; }
+        
+        /* CONTENIDO PRINCIPAL */
+        .main-content {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        /* Header del contenido principal */
+        .content-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--light-bg);
+        }
+        
+        .main-title {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .main-subtitle {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        /* Secciones del contenido */
+        .content-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        /* Timeline mejorado */
+        .timeline-compact {
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .timeline-compact:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: var(--secondary-color);
+        }
+        
+        .timeline-item-compact {
+            position: relative;
+            margin-bottom: 20px;
+            padding-left: 15px;
+        }
+        
+        .timeline-item-compact:before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 8px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--secondary-color);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--secondary-color);
+        }
+        
+        .timeline-date {
+            display: inline-block;
+            background: var(--light-bg);
+            color: var(--secondary-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 15px;
+            margin-bottom: 8px;
+        }
+        
+        .timeline-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        
+        .timeline-subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        /* Grid de productos compacto */
+        .grid-2-col {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .card-compact {
+            background: var(--light-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid var(--secondary-color);
+        }
+        
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+        
+        .card-badge {
+            display: inline-block;
+            background: var(--secondary-color);
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 10px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+        
+        /* Información personal grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            background: var(--light-bg);
+            padding: 12px;
+            border-radius: 6px;
+        }
+        
+        .info-label {
+            font-size: 0.85rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        /* Productos en venta */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .product-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            background: #f5f5f5;
+        }
+        
+        .product-body {
+            padding: 12px;
+        }
+        
+        /* Estado del producto */
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 5px 0;
+        }
+        
+        .status-good {
+            background: #ffe6f0;
+            color: #7a0033;
+        }
+
+        .status-regular {
+            background: #fff0f6;
+            color: #7a0033;
+        }
+        
+        /* Footer */
+        .cv-footer {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* Botones flotantes */
+        .floating-actions {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .floating-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            text-decoration: none;
+        }
+        
+        .floating-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .btn-print {
+            background: var(--secondary-color);
+        }
+        
+        .btn-pdf {
+            background: var(--accent-color);
+        }
+        
+        .btn-admin {
+            background: #555;
+        }
+        
+        /* Página de bienvenida */
+        .welcome-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 10px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .welcome-icon {
+            font-size: 4rem;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+        
+        .welcome-title {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .cv-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+            
+            .grid-2-col,
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            .main-content,
+            .sidebar {
+                padding: 20px;
+            }
+            
+            .profile-img {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .floating-actions {
+                right: 10px;
+                bottom: 10px;
+            }
+            
+            .floating-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            .floating-actions {
+                display: none !important;
+            }
+            
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .cv-container {
+                box-shadow: none;
+                gap: 10px;
+            }
+            
+            .sidebar {
+                background: #f8f9fa !important;
+                color: #333;
+                -webkit-print-color-adjust: exact;
+            }
+            
+            a {
+                color: #000 !important;
+                text-decoration: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if perfil %}
+    <!-- ========== DISEÑO CON PERFIL ========== -->
+    <div class="cv-container">
+        <!-- PANEL IZQUIERDO -->
+        <aside class="sidebar">
+            <!-- Foto y nombre -->
+            {% if perfil.foto_perfil %}
+            <img src="{{ perfil.foto_perfil.url }}" alt="{{ perfil.nombres }}" class="profile-img">
+            {% else %}
+            <div class="profile-img-placeholder" style="width: 180px; height: 180px; background: #ddd; border-radius: 50%; margin: 0 auto 20px;"></div>
+            {% endif %}
+            
+            <h1 class="profile-name">{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
+            
+            {% if perfil.descripcionperfil %}
+            <p class="profile-title">{{ perfil.descripcionperfil }}</p>
+            {% endif %}
+            
+            <!-- Información de contacto -->
+            <h3 class="section-title-sidebar">
+                <i class="fas fa-address-card"></i>Contacto
+            </h3>
+            
+            <div class="contact-info">
+                {% if perfil.numerocedula %}
+                <div class="contact-item">
+                    <i class="fas fa-id-card"></i>
+                    <span>CI: {{ perfil.numerocedula }}</span>
+                </div>
+                {% endif %}
+                
+                {% if perfil.telefonoconvencional %}
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>{{ perfil.telefonoconvencional }}</span>
+                </div>
+                {% endif %}
+                
+                {% if perfil.celular %}
+                <div class="contact-item">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>{{ perfil.celular }}</span>
+                </div>
+                {% endif %}
+                
+                {% if perfil.direcciondomiciliaria %}
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ perfil.direcciondomiciliaria }}</span>
+                </div>
+                {% endif %}
+                
+                {% if perfil.email %}
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>{{ perfil.email }}</span>
+                </div>
+                {% endif %}
+                
+                {% if perfil.sitioweb %}
+                <div class="contact-item">
+                    <i class="fas fa-globe"></i>
+                    <a href="{{ perfil.sitioweb }}" target="_blank" style="color: white; text-decoration: underline;">Sitio Web</a>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Resumen rápido (tarjetería) -->
+            <h3 class="section-title-sidebar">
+                <i class="fas fa-list"></i>Resumen rápido
+            </h3>
+            {% with cursos_count=cursos|default:''|length experiencias_count=experiencias|default:''|length reconocimientos_count=reconocimientos|default:''|length prod_acad_count=productos_academicos|default:''|length prod_lab_count=productos_laborales|default:''|length ventas_count=ventas_garage|default:''|length %}
+            <div style="background: rgba(255,255,255,0.95); color:#0b2740; padding:12px; border-radius:12px;">
+                <div class="small-card-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    <div class="small-card">
+                        <div class="count">{{ cursos_count|default:0 }}</div>
+                        <div class="card-icon">🎓</div>
+                        <div class="small-label">Cursos realizados</div>
+                    </div>
+                    <div class="small-card">
+                        <div class="count">{{ experiencias_count|default:0 }}</div>
+                        <div class="card-icon">👨‍💼</div>
+                        <div class="small-label">Experiencia laboral</div>
+                    </div>
+                    <div class="small-card">
+                        <div class="count">{{ reconocimientos_count|default:0 }}</div>
+                        <div class="card-icon">🏅</div>
+                        <div class="small-label">Reconocimientos</div>
+                    </div>
+                    <div class="small-card">
+                        <div class="count">{{ prod_acad_count|default:0 }}</div>
+                        <div class="card-icon">🟦</div>
+                        <div class="small-label">Productos académicos</div>
+                    </div>
+                    <div class="small-card">
+                        <div class="count">{{ prod_lab_count|default:0 }}</div>
+                        <div class="card-icon">📦</div>
+                        <div class="small-label">Productos laborales</div>
+                    </div>
+                    <div class="small-card">
+                        <div class="count">{{ ventas_count|default:0 }}</div>
+                        <div class="card-icon">🏷️</div>
+                        <div class="small-label">Venta garage</div>
+                    </div>
+                </div>
+
+                <hr style="margin:12px 0; border-color: rgba(11,39,64,0.06);">
+
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                </div>
+            </div>
+            {% endwith %}
+        </aside>
+        
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            <!-- Header del contenido -->
+            <div class="content-header">
+                <h1 class="main-title">Hoja de Vida Profesional</h1>
+                <p class="main-subtitle">{{ perfil.profesion|default:"Profesional" }}</p>
+            </div>
+            
+            <!-- Datos Personales -->
+            <section class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2 class="section-title">Información Personal</h2>
+                </div>
+                
+                <div class="info-grid">
+                    {% if perfil.nacionalidad %}
+                    <div class="info-item">
+                        <div class="info-label">Nacionalidad</div>
+                        <div>{{ perfil.nacionalidad }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if perfil.fechanacimiento %}
+                    <div class="info-item">
+                        <div class="info-label">Fecha de Nacimiento</div>
+                        <div>{{ perfil.fechanacimiento|date:"d/m/Y" }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if perfil.sexo %}
+                    <div class="info-item">
+                        <div class="info-label">Género</div>
+                        <div>{{ perfil.get_sexo_display }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if perfil.estadocivil %}
+                    <div class="info-item">
+                        <div class="info-label">Estado Civil</div>
+                        <div>{{ perfil.estadocivil }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if perfil.licenciaconducir %}
+                    <div class="info-item">
+                        <div class="info-label">Licencia de Conducir</div>
+                        <div>{{ perfil.licenciaconducir }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if perfil.lugarnacimiento %}
+                    <div class="info-item">
+                        <div class="info-label">Lugar de Nacimiento</div>
+                        <div>{{ perfil.lugarnacimiento }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+            
+            <!-- Experiencia Laboral -->
+            {% if experiencias and perfil.mostrar_experiencia %}
+            <section class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h2 class="section-title">Experiencia Laboral</h2>
+                </div>
+                
+                <div class="timeline-compact">
+                    {% for exp in experiencias %}
+                    <div class="timeline-item-compact">
+                        <span class="timeline-date">
+                            {{ exp.fechainiciogestion|date:"M Y" }} - 
+                            {% if exp.fechafingestion %}
+                                {{ exp.fechafingestion|date:"M Y" }}
+                            {% else %}
+                                Presente
+                            {% endif %}
+                        </span>
+                        <h3 class="timeline-title">{{ exp.cargodesempenado }}</h3>
+                        <p class="timeline-subtitle">{{ exp.nombrempresa }}</p>
+                        {% if exp.lugarempresa %}
+                        <p><i class="fas fa-map-marker-alt me-1"></i>{{ exp.lugarempresa }}</p>
+                        {% endif %}
+                        {% if exp.descripcionfunciones %}
+                        <p>{{ exp.descripcionfunciones|truncatewords:30 }}</p>
+                        {% endif %}
+
+                        {% if exp.rutacertificado %}
+                        <p><a href="{{ exp.rutacertificado.url }}" class="cert-link" target="_blank">Ver Certificado</a></p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+            
+            <!-- Cursos Realizados -->
+            {% if cursos and perfil.mostrar_cursos %}
+            <section class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h2 class="section-title">Curso Realizados</h2>
+                </div>
+                
+                <div class="product-grid">
+                    {% for curso in cursos %}
+                    <div class="product-card">
+                        {% if curso.rutacertificado %}
+                        <img src="{{ curso.rutacertificado.url }}" 
+                             alt="{{ curso.nombrecurso }}" 
+                             class="product-image">
+                        {% else %}
+                        <div class="product-image" style="background: #eee; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-certificate" style="color: #aaa; font-size: 2rem;"></i>
+                        </div>
+                        {% endif %}
+                        <div class="product-body">
+                            <h5>{{ curso.nombrecurso }}</h5>
+                            <p class="small" style="color: #666; margin-bottom: 5px;">
+                                {{ curso.entidadpatrocinadora }}
+                            </p>
+                            <span class="status-badge status-good">
+                                {{ curso.fechainicio|date:"M Y" }} - {{ curso.fechafin|date:"M Y" }}
+                                {% if curso.totalhoras %} | {{ curso.totalhoras }}h{% endif %}
+                            </span>
+                            {% if curso.descripcioncurso %}
+                            <p class="small" style="margin-top: 8px;">{{ curso.descripcioncurso|truncatewords:15 }}</p>
+                            {% endif %}
+
+                            {% if curso.rutacertificado %}
+                            <p style="margin-top:8px;"><a href="{{ curso.rutacertificado.url }}" class="cert-link" target="_blank">Ver Certificado</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+            
+            <!-- Reconocimientos -->
+            {% if reconocimientos and perfil.mostrar_reconocimientos %}
+            <section class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h2 class="section-title">Logros y Reconocimientos</h2>
+                </div>
+                
+                <div class="timeline-compact">
+                    {% for rec in reconocimientos %}
+                    <div class="timeline-item-compact">
+                        <span class="timeline-date">{{ rec.fechareconocimiento|date:"M Y" }}</span>
+                        <h3 class="timeline-title">{{ rec.tiporeconocimiento }}</h3>
+                        <p class="timeline-subtitle">{{ rec.entidadpatrocinadora }}</p>
+                        {% if rec.descripcionreconocimiento %}
+                        <p>{{ rec.descripcionreconocimiento|truncatewords:25 }}</p>
+                        {% endif %}
+
+                        {% if rec.rutacertificado %}
+                        <p><a href="{{ rec.rutacertificado.url }}" class="cert-link" target="_blank">Ver Certificado</a></p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+            
+            <!-- Productos Académicos -->
+            {% if productos_academicos and perfil.mostrar_productos_academicos %}
+            <section class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h2 class="section-title">Publicaciones</h2>
+                </div>
+                
+                <div class="grid-2-col">
+                    {% for producto in productos_academicos %}
+                    <div class="card-compact">
+                        <span class="card-badge">{{ producto.clasificador }}</span>
+                        <h4 class="card-title">{{ producto.nombrerecurso }}</h4>
+                        {% if producto.descripcion %}
+                        <p>{{ producto.descripcion|truncatewords:20 }}</p>
+                        {% endif %}
+                        {% if producto.fecha_registro %}
+                        <p class="text-muted small">
+                            <i class="fas fa-calendar me-1"></i>{{ producto.fecha_registro|date:"M Y" }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+            
+            <!-- Productos Laborales -->
+            {% if productos_laborales and perfil.mostrar_productos_laborales %}
+            <section class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h2 class="section-title">Proyectos Destacados</h2>
+                </div>
+                
+                <div class="grid-2-col">
+                    {% for producto in productos_laborales %}
+                    <div class="card-compact">
+                        <h4 class="card-title">{{ producto.nombreproducto }}</h4>
+                        {% if producto.fechaproducto %}
+                        <p class="text-muted small">
+                            <i class="fas fa-calendar me-1"></i>{{ producto.fechaproducto|date:"M Y" }}
+                        </p>
+                        {% endif %}
+                        {% if producto.descripcion %}
+                        <p>{{ producto.descripcion|truncatewords:20 }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+            
+            <!-- Venta Garage -->
+            {% if ventas_garage and perfil.mostrar_venta_garage %}
+            <section class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <h2 class="section-title">Productos en Venta</h2>
+                </div>
+                
+                <div class="product-grid">
+                    {% for producto in ventas_garage %}
+                    <div class="product-card">
+                        {% if producto.imagen_producto %}
+                        <img src="{{ producto.imagen_producto.url }}" alt="{{ producto.nombreproducto }}" class="product-image">
+                        {% else %}
+                        <div class="product-image" style="background: #eee; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-image" style="color: #aaa; font-size: 2rem;"></i>
+                        </div>
+                        {% endif %}
+                        <div class="product-body">
+                            <h5>{{ producto.nombreproducto }}</h5>
+                            <span class="status-badge {% if producto.estadoproducto == 'Bueno' %}status-good{% else %}status-regular{% endif %}">
+                                {{ producto.estadoproducto }}
+                            </span>
+                            {% if producto.descripcion %}
+                            <p class="small">{{ producto.descripcion|truncatewords:15 }}</p>
+                            {% endif %}
+                            <h4 class="text-primary mt-2">${{ producto.valordelbien }}</h4>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+        </main>
+    </div>
+    
+        <!-- Botones flotantes -->
+        <div class="floating-actions">
+                <button class="floating-btn btn-print" onclick="window.print()" title="Imprimir">
+                        <i class="fas fa-print"></i>
+                </button>
+                <button class="floating-btn btn-pdf" title="Descargar PDF" data-bs-toggle="modal" data-bs-target="#pdfOptionsModal">
+                        <i class="fas fa-file-pdf"></i>
+                </button>
+                <a href="/admin/" class="floating-btn btn-admin" title="Panel de Administración">
+                        <i class="fas fa-cog"></i>
+                </a>
+        </div>
+
+        <!-- Modal: Seleccionar secciones para PDF -->
+        <div class="modal fade" id="pdfOptionsModal" tabindex="-1" aria-labelledby="pdfOptionsLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-primary" id="pdfOptionsLabel">Seleccionar Secciones para PDF</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <form id="pdfOptionsForm" method="get" action="{% url 'generar_pdf' %}" target="_blank">
+                        <div class="modal-body">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" value="1" id="opt_experiencia" name="incluir_experiencia" {% if perfil.imprimir_experiencia %}checked{% endif %}>
+                                <input type="hidden" name="incluir_experiencia" value="0">
+                                <label class="form-check-label fw-bold" for="opt_experiencia">Incluir Experiencia</label>
+                            </div>
+
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" value="1" id="opt_cursos" name="incluir_cursos" {% if perfil.imprimir_cursos %}checked{% endif %}>
+                                <input type="hidden" name="incluir_cursos" value="0">
+                                <label class="form-check-label fw-bold" for="opt_cursos">Incluir Cursos/Títulos</label>
+                            </div>
+
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" value="1" id="opt_reconocimientos" name="incluir_reconocimientos" {% if perfil.imprimir_reconocimientos %}checked{% endif %}>
+                                <input type="hidden" name="incluir_reconocimientos" value="0">
+                                <label class="form-check-label fw-bold" for="opt_reconocimientos">Incluir Logros</label>
+                            </div>
+
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" value="1" id="opt_prod_acad" name="incluir_productos_academicos" {% if perfil.imprimir_productos_academicos %}checked{% endif %}>
+                                <input type="hidden" name="incluir_productos_academicos" value="0">
+                                <label class="form-check-label fw-bold" for="opt_prod_acad">Incluir Prod. Académicos</label>
+                            </div>
+
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" value="1" id="opt_prod_lab" name="incluir_productos_laborales" {% if perfil.imprimir_productos_laborales %}checked{% endif %}>
+                                <input type="hidden" name="incluir_productos_laborales" value="0">
+                                <label class="form-check-label fw-bold" for="opt_prod_lab">Incluir Proyectos</label>
+                            </div>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" value="1" id="opt_venta" name="incluir_venta_garage" {% if perfil.imprimir_venta_garage %}checked{% endif %}>
+                                <label class="form-check-label fw-bold" for="opt_venta">Incluir Venta Garage</label>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Generar PDF</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    
+    {% else %}
+    <!-- ========== PÁGINA DE BIENVENIDA ========== -->
+    <div class="welcome-container">
+        <div class="welcome-icon">
+            <i class="fas fa-user-tie"></i>
+        </div>
+        
+        <h1 class="welcome-title">Sistema de Hoja de Vida</h1>
+        
+        <p class="lead mb-4">
+            Bienvenido al sistema de gestión de hojas de vida profesional.
+            Actualmente no hay un perfil configurado en el sistema.
+        </p>
+        
+        <div class="d-flex gap-3 justify-content-center mt-4">
+            <a href="/admin/" class="btn btn-primary btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i>Acceder al Administrador
+            </a>
+        </div>
+        
+        <p class="text-muted mt-4 small">
+            Para configurar tu hoja de vida, inicia sesión en el panel de administración.
+        </p>
+    </div>
+    {% endif %}
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Scripts básicos
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animación suave al hacer scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observar elementos para animación
+            document.querySelectorAll('.timeline-item-compact, .card-compact, .product-card').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.5s ease';
+                observer.observe(el);
+            });
+            
+            // Manejo responsive de botones flotantes
+            function adjustFloatingButtons() {
+                const floatingActions = document.querySelector('.floating-actions');
+                if (window.innerWidth <= 768 && floatingActions) {
+                    floatingActions.style.flexDirection = 'row';
+                    floatingActions.style.bottom = '10px';
+                    floatingActions.style.right = '50%';
+                    floatingActions.style.transform = 'translateX(50%)';
+                } else if (floatingActions) {
+                    floatingActions.style.flexDirection = 'column';
+                    floatingActions.style.right = '20px';
+                    floatingActions.style.bottom = '20px';
+                    floatingActions.style.transform = 'none';
+                }
+            }
+            
+            window.addEventListener('resize', adjustFloatingButtons);
+                // Interceptar envío del formulario del modal para construir URL controlada
+                const pdfForm = document.getElementById('pdfOptionsForm');
+                if (pdfForm) {
+                    pdfForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const action = pdfForm.getAttribute('action');
+                        const checks = pdfForm.querySelectorAll('input[type=checkbox]');
+                        const params = new URLSearchParams();
+                        checks.forEach(chk => {
+                            const name = chk.name;
+                            const val = chk.checked ? '1' : '0';
+                            params.set(name, val);
+                        });
+
+                        const url = action + '?' + params.toString();
+                        // Abrir en nueva pestaña y cerrar modal
+                        window.open(url, '_blank');
+                        const modalEl = document.getElementById('pdfOptionsModal');
+                        try {
+                            const bsModal = bootstrap.Modal.getInstance(modalEl);
+                            if (bsModal) bsModal.hide();
+                        } catch (err) {}
+                    });
+                }
+            adjustFloatingButtons();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Hoja de Vida Profesional{% endblock %}</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --color-primary: #ff4da6; /* Rosa vibrante */
+            --color-secondary: #ff99cc; /* Rosa claro */
+            --color-success: #27ae60;
+            --color-warning: #f39c12;
+            --color-danger: #e74c3c;
+            --color-light: #fff5fb;
+            --color-dark: #cc337a;
+        }
+        
+        body {
+            padding-top: 70px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+        
+        .card-header {
+            border-radius: 15px 15px 0 0 !important;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 77, 166, 0.35);
+        }
+        
+        .badge-estado {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        .badge-bueno {
+            background-color: #ffe6f0;
+            color: #7a0033;
+        }
+        
+        .badge-regular {
+            background-color: #fff0f6;
+            color: #7a0033;
+        }
+        
+        .section-title {
+            position: relative;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            color: var(--color-primary);
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            border-radius: 3px;
+        }
+        
+        .perfil-foto {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--color-secondary);
+        }
+        
+        .timeline-item:after {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 15px;
+            width: 1px;
+            height: calc(100% + 15px);
+            background: #e0e0e0;
+        }
+        
+        .timeline-item:last-child:after {
+            display: none;
+        }
+        
+        .sticky-top {
+            top: 80px;
+        }
+        
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--color-secondary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .scroll-to-top.show {
+            opacity: 1;
+        }
+        
+        .scroll-to-top:hover {
+            background: var(--color-primary);
+            transform: translateY(-3px);
+        }
+        
+        footer {
+            background: var(--color-primary);
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+        
+        .social-icons a {
+            color: white;
+            margin: 0 10px;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            color: var(--color-secondary);
+        }
+        
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            
+            body {
+                padding-top: 0;
+                background: white;
+            }
+            
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top no-print">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <i class="fas fa-user-tie me-2"></i>Portafolio Profesional
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'index' %}">
+                            <i class="fas fa-home"></i> Inicio
+                        </a>
+                    </li>
+                    
+                    {% if perfil_activo %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'perfil_completo' perfil_activo.pk %}">
+                            <i class="fas fa-id-card"></i> Mi Perfil
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-plus-circle"></i> Añadir
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'experiencia_nueva' %}">Experiencia Laboral</a></li>
+                            <li><a class="dropdown-item" href="#">Curso Realizado</a></li>
+                            <li><a class="dropdown-item" href="#">Reconocimiento</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'datos_personales_nuevo' %}">Nuevo Perfil</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'configurar_pdf' %}?perfil_id={{ perfil_activo.pk }}">
+                            <i class="fas fa-file-pdf"></i> Generar PDF
+                        </a>
+                    </li>
+                    
+                    {% if perfil_activo.mostrar_venta_garage %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'venta_garage' %}">
+                            <i class="fas fa-store"></i> Venta Garage
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/" target="_blank">
+                            <i class="fas fa-cog"></i> Administrar
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Buscador -->
+                <form class="d-flex ms-3" action="{% url 'buscar' %}" method="get">
+                    <input class="form-control me-2" type="search" name="q" placeholder="Buscar..." aria-label="Buscar">
+                    <button class="btn btn-outline-light" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="container py-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="no-print">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Sistema de Hoja de Vida Profesional</h5>
+                    <p>Gestiona tu perfil profesional de manera integral y profesional.</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="social-icons">
+                        {% if perfil_activo and perfil_activo.sitioweb %}
+                        <a href="{{ perfil_activo.sitioweb }}" target="_blank" title="Sitio Web">
+                            <i class="fas fa-globe"></i>
+                        </a>
+                        {% endif %}
+                        <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                    <p class="mt-3 mb-0">
+                        &copy; {% now "Y" %} - Todos los derechos reservados
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botón para ir arriba -->
+    <div class="scroll-to-top no-print" id="scrollToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Scroll to top
+        const scrollToTopBtn = document.getElementById('scrollToTop');
+        
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('show');
+            } else {
+                scrollToTopBtn.classList.remove('show');
+            }
+        });
+        
+        scrollToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Validación de cédula en tiempo real
+        document.addEventListener('DOMContentLoaded', function() {
+            const cedulaField = document.getElementById('id_numerocedula');
+            if (cedulaField && !cedulaField.readOnly) {
+                cedulaField.addEventListener('blur', function() {
+                    const cedula = this.value;
+                    if (cedula.length === 10) {
+                        fetch('/api/validar-cedula/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: JSON.stringify({cedula: cedula})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.existe) {
+                                alert('⚠️ Esta cédula ya está registrada en el sistema');
+                                this.value = '';
+                                this.focus();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        // Tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
